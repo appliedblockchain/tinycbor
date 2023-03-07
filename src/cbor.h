@@ -39,6 +39,7 @@
 #define TINYCBOR_VERSION            ((TINYCBOR_VERSION_MAJOR << 16) | (TINYCBOR_VERSION_MINOR << 8) | TINYCBOR_VERSION_PATCH)
 
 #ifdef __cplusplus
+#include <cstdio>
 extern "C" {
 #else
 #include <stdbool.h>
@@ -629,90 +630,90 @@ CBOR_INLINE_API CborError cbor_value_get_double(const CborValue *value, double *
     return CborNoError;
 }
 
-/* Validation API */
-#ifndef CBOR_NO_VALIDATION_API
+// /* Validation API */
+// #ifndef CBOR_NO_VALIDATION_API
 
-enum CborValidationFlags {
-    /* Bit mapping:
-     *  bits 0-7 (8 bits):      canonical format
-     *  bits 8-11 (4 bits):     canonical format & strict mode
-     *  bits 12-20 (8 bits):    strict mode
-     *  bits 21-31 (10 bits):   other
-     */
+// enum CborValidationFlags {
+//     /* Bit mapping:
+//      *  bits 0-7 (8 bits):      canonical format
+//      *  bits 8-11 (4 bits):     canonical format & strict mode
+//      *  bits 12-20 (8 bits):    strict mode
+//      *  bits 21-31 (10 bits):   other
+//      */
 
-    CborValidateShortestIntegrals           = 0x0001,
-    CborValidateShortestFloatingPoint       = 0x0002,
-    CborValidateShortestNumbers             = CborValidateShortestIntegrals | CborValidateShortestFloatingPoint,
-    CborValidateNoIndeterminateLength       = 0x0100,
-    CborValidateMapIsSorted                 = 0x0200 | CborValidateNoIndeterminateLength,
+//     CborValidateShortestIntegrals           = 0x0001,
+//     CborValidateShortestFloatingPoint       = 0x0002,
+//     CborValidateShortestNumbers             = CborValidateShortestIntegrals | CborValidateShortestFloatingPoint,
+//     CborValidateNoIndeterminateLength       = 0x0100,
+//     CborValidateMapIsSorted                 = 0x0200 | CborValidateNoIndeterminateLength,
 
-    CborValidateCanonicalFormat             = 0x0fff,
+//     CborValidateCanonicalFormat             = 0x0fff,
 
-    CborValidateMapKeysAreUnique            = 0x1000 | CborValidateMapIsSorted,
-    CborValidateTagUse                      = 0x2000,
-    CborValidateUtf8                        = 0x4000,
+//     CborValidateMapKeysAreUnique            = 0x1000 | CborValidateMapIsSorted,
+//     CborValidateTagUse                      = 0x2000,
+//     CborValidateUtf8                        = 0x4000,
 
-    CborValidateStrictMode                  = 0xfff00,
+//     CborValidateStrictMode                  = 0xfff00,
 
-    CborValidateMapKeysAreString            = 0x100000,
-    CborValidateNoUndefined                 = 0x200000,
-    CborValidateNoTags                      = 0x400000,
-    CborValidateFiniteFloatingPoint         = 0x800000,
-    /* unused                               = 0x1000000, */
-    /* unused                               = 0x2000000, */
+//     CborValidateMapKeysAreString            = 0x100000,
+//     CborValidateNoUndefined                 = 0x200000,
+//     CborValidateNoTags                      = 0x400000,
+//     CborValidateFiniteFloatingPoint         = 0x800000,
+//     /* unused                               = 0x1000000, */
+//     /* unused                               = 0x2000000, */
 
-    CborValidateNoUnknownSimpleTypesSA      = 0x4000000,
-    CborValidateNoUnknownSimpleTypes        = 0x8000000 | CborValidateNoUnknownSimpleTypesSA,
-    CborValidateNoUnknownTagsSA             = 0x10000000,
-    CborValidateNoUnknownTagsSR             = 0x20000000 | CborValidateNoUnknownTagsSA,
-    CborValidateNoUnknownTags               = 0x40000000 | CborValidateNoUnknownTagsSR,
+//     CborValidateNoUnknownSimpleTypesSA      = 0x4000000,
+//     CborValidateNoUnknownSimpleTypes        = 0x8000000 | CborValidateNoUnknownSimpleTypesSA,
+//     CborValidateNoUnknownTagsSA             = 0x10000000,
+//     CborValidateNoUnknownTagsSR             = 0x20000000 | CborValidateNoUnknownTagsSA,
+//     CborValidateNoUnknownTags               = 0x40000000 | CborValidateNoUnknownTagsSR,
 
-    CborValidateCompleteData                = (int)0x80000000,
+//     CborValidateCompleteData                = (int)0x80000000,
 
-    CborValidateStrictest                   = (int)~0U,
-    CborValidateBasic                       = 0
-};
+//     CborValidateStrictest                   = (int)~0U,
+//     CborValidateBasic                       = 0
+// };
 
-CBOR_API CborError cbor_value_validate(const CborValue *it, uint32_t flags);
-#endif /* CBOR_NO_VALIDATION_API */
+// CBOR_API CborError cbor_value_validate(const CborValue *it, uint32_t flags);
+// #endif /* CBOR_NO_VALIDATION_API */
 
-/* Human-readable (dump) API */
-#ifndef CBOR_NO_PRETTY_API
+// /* Human-readable (dump) API */
+// #ifndef CBOR_NO_PRETTY_API
 
-enum CborPrettyFlags {
-    CborPrettyNumericEncodingIndicators     = 0x01,
-    CborPrettyTextualEncodingIndicators     = 0,
+// enum CborPrettyFlags {
+//     CborPrettyNumericEncodingIndicators     = 0x01,
+//     CborPrettyTextualEncodingIndicators     = 0,
 
-    CborPrettyIndicateIndeterminateLength   = 0x02,
-    CborPrettyIndicateIndetermineLength     = CborPrettyIndicateIndeterminateLength, /* deprecated */
-    CborPrettyIndicateOverlongNumbers       = 0x04,
+//     CborPrettyIndicateIndeterminateLength   = 0x02,
+//     CborPrettyIndicateIndetermineLength     = CborPrettyIndicateIndeterminateLength, /* deprecated */
+//     CborPrettyIndicateOverlongNumbers       = 0x04,
 
-    CborPrettyShowStringFragments           = 0x100,
-    CborPrettyMergeStringFragments          = 0,
+//     CborPrettyShowStringFragments           = 0x100,
+//     CborPrettyMergeStringFragments          = 0,
 
-    CborPrettyDefaultFlags          = CborPrettyIndicateIndeterminateLength
-};
+//     CborPrettyDefaultFlags          = CborPrettyIndicateIndeterminateLength
+// };
 
-typedef CborError (*CborStreamFunction)(void *token, const char *fmt, ...)
-#ifdef __GNUC__
-    __attribute__((__format__(printf, 2, 3)))
-#endif
-;
+// typedef CborError (*CborStreamFunction)(void *token, const char *fmt, ...)
+// #ifdef __GNUC__
+//     __attribute__((__format__(printf, 2, 3)))
+// #endif
+// ;
 
-CBOR_API CborError cbor_value_to_pretty_stream(CborStreamFunction streamFunction, void *token, CborValue *value, int flags);
+// CBOR_API CborError cbor_value_to_pretty_stream(CborStreamFunction streamFunction, void *token, CborValue *value, int flags);
 
-/* The following API requires a hosted C implementation (uses FILE*) */
-#if !defined(__STDC_HOSTED__) || __STDC_HOSTED__-0 == 1
-CBOR_API CborError cbor_value_to_pretty_advance_flags(FILE *out, CborValue *value, int flags);
-CBOR_API CborError cbor_value_to_pretty_advance(FILE *out, CborValue *value);
-CBOR_INLINE_API CborError cbor_value_to_pretty(FILE *out, const CborValue *value)
-{
-    CborValue copy = *value;
-    return cbor_value_to_pretty_advance_flags(out, &copy, CborPrettyDefaultFlags);
-}
-#endif /* __STDC_HOSTED__ check */
+// /* The following API requires a hosted C implementation (uses FILE*) */
+// #if !defined(__STDC_HOSTED__) || __STDC_HOSTED__-0 == 1
+// CBOR_API CborError cbor_value_to_pretty_advance_flags(FILE *out, CborValue *value, int flags);
+// CBOR_API CborError cbor_value_to_pretty_advance(FILE *out, CborValue *value);
+// CBOR_INLINE_API CborError cbor_value_to_pretty(FILE *out, const CborValue *value)
+// {
+//     CborValue copy = *value;
+//     return cbor_value_to_pretty_advance_flags(out, &copy, CborPrettyDefaultFlags);
+// }
+// #endif /* __STDC_HOSTED__ check */
 
-#endif /* CBOR_NO_PRETTY_API */
+// #endif /* CBOR_NO_PRETTY_API */
 
 #endif /* CBOR_NO_PARSER_API */
 
